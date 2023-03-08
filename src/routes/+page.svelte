@@ -1,75 +1,98 @@
 <script lang="ts">
-	interface Participant {
-		name: string;
-		tickets: number;
-		angle: number;
-	}
+	import Sector from '../components/Sector.svelte';
+	import type { SectorData, Participant } from '../types';
+	import { getColorHashFromString } from '../utils';
 
 	const participants: Participant[] = [
 		{
 			name: 'Alice',
-			tickets: 5,
-			angle: 0
+			tickets: 5
 		},
 		{
 			name: 'Bob',
-			tickets: 15,
-			angle: 0
+			tickets: 15
 		},
 		{
 			name: 'Carlos',
-			tickets: 4,
-			angle: 0
+			tickets: 4
 		},
 		{
 			name: 'Danielle',
-			tickets: 10,
-			angle: 0
+			tickets: 10
 		},
 		{
 			name: 'Eric',
-			tickets: 5,
-			angle: 0
+			tickets: 5
 		},
 		{
 			name: 'Fiodor',
-			tickets: 5,
-			angle: 0
+			tickets: 5
+		},
+		{
+			name: 'Gordon',
+			tickets: 5
+		},
+		{
+			name: 'Haley',
+			tickets: 4
+		},
+		{
+			name: 'Inagaki',
+			tickets: 5
+		},
+		{
+			name: 'Jolene',
+			tickets: 3
+		},
+		{
+			name: 'Katie',
+			tickets: 5
+		},
+		{
+			name: 'Llewyn',
+			tickets: 8
+		},
+		{
+			name: 'Minney',
+			tickets: 5
+		},
+		{
+			name: 'Nils',
+			tickets: 4
+		},
+		{
+			name: 'Oleg',
+			tickets: 5
 		}
 	];
 
 	const totalTickets = participants.reduce((total, current) => total + current.tickets, 0);
-	const diameter = 500;
+	const diameter = 750;
 	const radius = diameter / 2;
+	const angle = (tickets: number) => (tickets / totalTickets) * 360;
+	const roundDegrees = (angle: number) => Math.min(angle, 360);
 
-	participants.forEach((p, index) => {
-		p.angle = Math.round((p.tickets / totalTickets) * 360);
+	const sectors = participants.reduce((sectors: SectorData[], participant, index) => {
+		if (index === 0) {
+			sectors.push({
+				participant,
+				startAngle: 0,
+				endAngle: roundDegrees(angle(participant.tickets))
+			});
 
-		if (index > 0) {
-			p.angle += participants[index - 1].angle;
+			return sectors;
 		}
 
-		if (p.angle > 360) {
-			p.angle = 360;
-		}
-	});
+		const startAngle = sectors[index - 1].endAngle;
 
-	function getBackgroundColor(stringInput: string) {
-		// Thanks to Aslam: https://stackoverflow.com/a/66494926
-		let stringUniqueHash = [...stringInput].reduce((acc, char) => {
-			return char.charCodeAt(0) + ((acc << 5) - acc);
-		}, 0);
-		return `hsl(${stringUniqueHash % 360}, 95%, 35%)`;
-	}
+		sectors.push({
+			participant,
+			startAngle,
+			endAngle: roundDegrees(startAngle + angle(participant.tickets))
+		});
 
-	const getCoordinates = (angle: number) => {
-		const result = {
-			x: radius * Math.sin((Math.PI * 2 * angle) / 360),
-			y: radius * Math.cos((Math.PI * 2 * angle) / 360)
-		};
-
-		return result;
-	};
+		return sectors;
+	}, []);
 </script>
 
 <svelte:head>
@@ -78,43 +101,34 @@
 
 <main>
 	<h1>🍷 Vinn vin!</h1>
+	<section class="container">
 	<table>
-		{#each participants as participant}
+		{#each participants as participant, i}
 			<tr>
+				<td style={`background-color: ${getColorHashFromString(participant.name)}; color: white;`}></td>
 				<td>{participant.name}</td>
 				<td>{participant.tickets}</td>
 			</tr>
 		{/each}
+		<tr>
+			<td><strong>Total</strong></td>
+			<td>{participants.length}</td>
+		</tr>
 	</table>
-	<svg width={diameter} height={diameter}>
+	<svg width={diameter} height={diameter}>	
 		<g transform={`translate(${radius}, ${radius})`}>
-			<circle r={radius} cx={0} cy={0} stroke-width="5"/>
-			{#each participants as participant, i}
-				{@const startCoords = getCoordinates(participants[i - 1]?.angle ?? 0)}
-				{@const endCoords = getCoordinates(participant.angle)}
-				{@const sliceSize = participant.angle - participants[i - 1]?.angle ?? 0}
-				{@const id = `participant-${i.toString()}`}
-				<path
-					{id}
-					d={`M 0 0 L ${startCoords.x} ${startCoords.y} A ${radius} ${radius} 0 ${
-						sliceSize >= 180 ? 1 : 0
-					} 0 ${endCoords.x} ${endCoords.y} z`}
-					data-participant={participant.name}
-					fill={getBackgroundColor(participant.name)}
-					color="white"
-				/>
-				<text>
-					<textPath href={`#${id}`} startOffset="50%" text-anchor="middle"
-						>{participant.name}</textPath
-					>
-				</text>
+			<circle r={radius} cx={0} cy={0} stroke-width="5" />
+			{#each sectors as sector, index}
+				<Sector {sector} {index} {radius} />
 			{/each}
 		</g>
 	</svg>
+	</section>
 </main>
 
 <style>
 	main {
+		font-family: system-ui;
 		margin: 0 auto;
 		max-width: 1000px;
 	}
@@ -129,9 +143,13 @@
 		fill: transparent;
 	}
 
-	textPath {
-		fill: white;
-		font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-		font-size: 24px;
+	h1 {
+		text-align: center;
+		font-size: 4em;
+	}
+
+	.container {
+		display: flex;
+		justify-content: space-evenly;
 	}
 </style>
