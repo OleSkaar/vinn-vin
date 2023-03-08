@@ -1,33 +1,37 @@
 <script lang="ts">
 	import type { Coordinates, SectorData } from '../types';
-	import { getColorHashFromString, getCoordinatesOnCircle } from '../utils'
+	import { getColorHashFromString, getCoordinatesOnCircle } from '../utils';
 
-    export let sector: SectorData;
-	export let index: number;
+	export let sector: SectorData;
 	export let radius: number;
 
-    const { participant, startAngle, endAngle } = sector;
+    $: participant = sector.participant;
+    $: startAngle = sector.startAngle;
+    $: endAngle = sector.endAngle;
+    $: radius = radius;
 
-    const getCoords = (angle: number) => getCoordinatesOnCircle(radius, angle);
-    const line = (coords: Coordinates) => `M 0 0 L ${coords.x} ${coords.y}`;
+	const getCoords = (angle: number) => getCoordinatesOnCircle(radius, angle);
+	const line = (coords: Coordinates) => `M 0 0 L ${coords.x} ${coords.y}`;
 
-	const startCoords = getCoords(startAngle);
-	const endCoords = getCoords(endAngle);
-	const arcLength = endAngle - startAngle;
-	const largeArcFlag = arcLength >= 180 ? 1 : 0;
+	$: startCoords = getCoords(startAngle);
+	$: endCoords = getCoords(endAngle);
+	$: arcLength = endAngle - startAngle;
+	$: largeArcFlag = arcLength >= 180 ? 1 : 0;
 
-	const sectorPath = `${line(startCoords)} A ${radius} ${radius} 0 ${largeArcFlag} 0 ${endCoords.x} ${endCoords.y} z`;
-	const fill = getColorHashFromString(participant.name);
-	const id = `participant-${index.toString()}`;
-	const href = `#${id}`;
+	$: sectorPath = `${line(startCoords)} A ${radius} ${radius} 0 ${largeArcFlag} 0 ${
+		endCoords.x
+	} ${endCoords.y} z`;
+	$: fill = getColorHashFromString(participant.name);
+	$: id = `participant-${participant.id}`;
+	$: href = `#${id}`;
 
-    const centerAngle = (startAngle + endAngle) / 2;
-    const centerCoords = getCoords(centerAngle);
-    const centerPath = line(centerCoords);
+	$: centerAngle = (startAngle + endAngle) / 2;
+	$: centerCoords = getCoords(centerAngle);
+	$: centerPath = line(centerCoords);
 </script>
 
-<path d={sectorPath} {fill} />
-<path d={centerPath} {id}/>
+<path d={sectorPath} {fill} class="sector" />
+<path d={centerPath} {id} />
 <text>
 	<textPath {href} startOffset="50%">{participant.name}</textPath>
 </text>
@@ -38,5 +42,11 @@
 		font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
 			Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 		font-size: 24px;
+	}
+
+	.sector:hover {
+		transition: transform 0.125s ease;
+		transform: translate3d(50px, 50px, 0);
+		cursor: pointer;
 	}
 </style>

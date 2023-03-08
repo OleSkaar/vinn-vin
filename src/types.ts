@@ -4,6 +4,7 @@ export interface Coordinates {
 }
 
 export interface Participant {
+    id: string;
     name: string;
     tickets: number;
 }
