@@ -1,2 +1,2 @@
 export * from './getColorHashFromString';
-export * from './getCoordinatesOnCircle';
+export * from './getSectorSvgData';
