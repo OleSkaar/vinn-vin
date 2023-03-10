@@ -5,18 +5,23 @@
 
 	export let sector: SectorData;
 	export let radius: number;
+	export let isOnlySector: boolean;
 
 	$: svgData = getSectorSvgData(sector, radius);
 	$: fill = getColorHashFromString(sector.participant.name);
 </script>
 
-<path d={svgData.sectorPath} {fill} class="sector" />
+<path d={svgData.sectorPath} {fill} class="sector" class:stroke="{!isOnlySector}" />
 <path d={svgData.centerPath} id={`participant-${sector.participant.id}`} />
 <text>
 	<textPath href={`#participant-${sector.participant.id}`} startOffset="50%">{sector.participant.name}</textPath>
 </text>
 
 <style>
+	text {
+		pointer-events: none;
+	}
+
 	textPath {
 		fill: white;
 		font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
@@ -24,9 +29,16 @@
 		font-size: 24px;
 	}
 
-	.sector:hover {
-		transition: transform 0.125s ease;
-		transform: translate3d(50px, 50px, 0);
+	.sector {
 		cursor: pointer;
+	}
+
+	.stroke {
+		stroke: black;
+		stroke-width: 1;
+	}
+
+	.stroke:hover {
+		stroke-width: 5;
 	}
 </style>

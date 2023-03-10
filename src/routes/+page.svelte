@@ -25,7 +25,8 @@
 
 	h1 {
 		text-align: center;
-		font-size: 4em;
+		font-size: 3em;
+		margin-bottom: 1.5em;
 	}
 
 	.container {

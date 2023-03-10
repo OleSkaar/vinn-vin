@@ -1,145 +1,62 @@
 <script lang="ts">
 	import { participants } from '../stores/participants';
-	import { getColorHashFromString } from '../utils';
+	import { getColorHashFromString, isValidParticipant } from '../utils';
 
 	$: participantCount = $participants.length;
+	$: hasInvalidParticipant = !$participants.every(isValidParticipant);
 
-	const names = [
-		'Emma',
-		'Liam',
-		'Olivia',
-		'Noah',
-		'Ava',
-		'Elijah',
-		'Isabella',
-		'Lucas',
-		'Sophia',
-		'Mason',
-		'Mia',
-		'Logan',
-		'Charlotte',
-		'Ethan',
-		'Amelia',
-		'Oliver',
-		'Harper',
-		'Jackson',
-		'Evelyn',
-		'Aiden',
-		'Abigail',
-		'Sebastian',
-		'Emily',
-		'Caleb',
-		'Elizabeth',
-		'Benjamin',
-		'Mila',
-		'Leo',
-		'Ella',
-		'Michael',
-		'Avery',
-		'Alexander',
-		'Sofia',
-		'Ezra',
-		'Camila',
-		'Grayson',
-		'Aria',
-		'James',
-		'Scarlett',
-		'Jacob',
-		'Victoria',
-		'William',
-		'Madison',
-		'Isaiah',
-		'Luna',
-		'Daniel',
-		'Grace',
-		'Hudson',
-		'Chloe',
-		'Henry',
-		'Penelope',
-		'Owen',
-		'Riley',
-		'Wyatt',
-		'Layla',
-		'Matthew',
-		'Lily',
-		'Luke',
-		'Ellie',
-		'Levi',
-		'Aurora',
-		'Nicholas',
-		'Nora',
-		'David',
-		'Hannah',
-		'Jaxon',
-		'Aaliyah',
-		'John',
-		'Addison',
-		'Cameron',
-		'Stella',
-		'Nathan',
-		'Savannah',
-		'Dylan',
-		'Brooklyn',
-		'Eva',
-		'Violet',
-		'Caroline',
-		'Maya',
-		'Gabriel',
-		'Nova',
-		'Anthony',
-		'Eleanor',
-		'Maddox',
-		'Hazel',
-		'Daisy',
-		'Jasmine',
-		'Adam',
-		'Audrey',
-		'Aaron',
-		'Bella',
-		'Isabelle',
-		'Claire',
-		'Connor',
-		'Lucy',
-		'Evelyn',
-		'Alice',
-		'Jordan',
-		'Lillian',
-		'Adrian',
-		'Zoe',
-		'Eleanor',
-		'Ellie',
-		'Samantha',
-		'Leah',
-		'Alexa',
-		'Natalie',
-		'Nicholas',
-		'Maria',
-		'Cole',
-		'Naomi'
-	];
+	let validate = false;
 
 	const addParticipant = () => {
+		validate = hasInvalidParticipant;
+
+		if (hasInvalidParticipant) {
+			return;
+		}
+
 		$participants = [
 			...$participants,
 			{
-				id: participantCount.toString(),
-				name: names[Math.floor(Math.random() * 100 - 1)],
-				tickets: Math.max(Math.floor(Math.random() * 10), 1)
+				id: participantCount,
+				name: '',
+				tickets: 0
 			}
 		];
+	};
 
-		participantCount++;
+	const focus = (el: HTMLElement) => {
+		el.focus();
+	};
+
+	const submitOnEnter = (e: KeyboardEvent) => {
+		if (e.key === 'Enter') {
+			addParticipant();
+		}
+	};
+
+	const resetParticipants = () => {
+		$participants = [{ id: 0, name: '', tickets: 0 }];
 	};
 </script>
 
 <div class="participants">
-	{#each $participants as participant}
-		<form style={`background-color: ${getColorHashFromString(participant.name)}; color: white;`}>
-			<input bind:value={participant.name} placeholder="Name" required />
-			<input type="number" bind:value={participant.tickets} min="0" required />
+	{#each $participants as participant (participant.id)}
+		<form class:validate on:submit|preventDefault={addParticipant}>
+			<div class="circle" style={`background-color: ${getColorHashFromString(participant.name)}`} />
+			<input class="participant" bind:value={participant.name} required use:focus />
+			<input
+				class="tickets"
+				type="number"
+				min="1"
+				required
+				bind:value={participant.tickets}
+				on:keydown={submitOnEnter}
+			/>
 		</form>
 	{/each}
 	<button on:click={addParticipant}>Add</button>
+	<hr />
+	<button class="reset" on:click={resetParticipants}>Reset</button>
 </div>
 
 <style>
@@ -149,26 +66,54 @@
 		gap: 10px;
 	}
 
+	.participant {
+		width: 85%;
+	}
+
+	.tickets {
+		width: 10%;
+	}
+
+	.circle {
+		width: 25px;
+		height: 25px;
+	}
+
+	.reset {
+		margin-top: auto;
+	}
+
+	hr {
+		width: 100%;
+	}
+
 	form {
-		padding: 10px;
 		display: flex;
-        gap: 10px;
-        color: #e7e7e7;
+		justify-content: space-between;
+		align-items: center;
+		gap: 10px;
+		color: #e7e7e7;
 	}
 
 	input {
 		padding: 10px;
-        font-size: 1.2em;
-        font-family: system-ui;
+		font-size: 1.2em;
+		font-family: system-ui;
 	}
 
-    button {
-        font-size: 1.2em;
-        padding: 10px;
-        cursor: pointer;
-    }
+	input[type='number']:not(:focus) {
+		appearance: textfield;
+		-moz-appearance: textfield;
+		text-align: center;
+	}
 
-	div {
-		display: flex;
+	.validate > input:invalid {
+		outline: 1px solid darkred;
+	}
+
+	button {
+		font-size: 1.2em;
+		padding: 10px;
+		cursor: pointer;
 	}
 </style>

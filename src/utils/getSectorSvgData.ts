@@ -19,8 +19,7 @@ export const getSectorSvgData = (sector: SectorData, radius: number) => {
     const centerAngle = (startAngle + endAngle) / 2;
 
     return {
-        sectorPath: `${line(startCoords)} A ${radius} ${radius} 0 ${largeArcFlag} 0 ${endCoords.x} ${endCoords.y
-            } z`,
+        sectorPath: `${line(startCoords)} A ${radius} ${radius} 0 ${largeArcFlag} 0 ${endCoords.x} ${endCoords.y} z`,
         centerPath: line(getCoordinatesOnCircle(radius, centerAngle))
     };
 };
