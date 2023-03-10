@@ -18,6 +18,12 @@
 </main>
 
 <style>
+	:global(*),
+	:global(*):before,
+	:global(*):after {
+		box-sizing: border-box;
+	}
+
 	main {
 		font-family: system-ui;
 		margin: 0 auto;
@@ -30,7 +36,8 @@
 	}
 
 	.container {
-		display: flex;
-		justify-content: space-evenly;
+		display: grid;
+		grid-template-columns: 1fr 2fr;
+		gap: 50px;
 	}
 </style>

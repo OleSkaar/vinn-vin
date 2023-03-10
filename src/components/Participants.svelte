@@ -2,7 +2,6 @@
 	import { participants } from '../stores/participants';
 	import { getColorHashFromString, isValidParticipant } from '../utils';
 
-	$: participantCount = $participants.length;
 	$: hasInvalidParticipant = !$participants.every(isValidParticipant);
 
 	let validate = false;
@@ -17,11 +16,15 @@
 		$participants = [
 			...$participants,
 			{
-				id: participantCount,
+				id: $participants[$participants.length - 1].id + 1,
 				name: '',
 				tickets: 0
 			}
 		];
+	};
+
+	const removeParticipant = (id: number) => {
+		$participants = $participants.filter((participant) => participant.id !== id);
 	};
 
 	const focus = (el: HTMLElement) => {
@@ -39,63 +42,72 @@
 	};
 </script>
 
-<div class="participants">
+<div class="wrapper">
 	{#each $participants as participant (participant.id)}
-		<form class:validate on:submit|preventDefault={addParticipant}>
-			<div class="circle" style={`background-color: ${getColorHashFromString(participant.name)}`} />
-			<input class="participant" bind:value={participant.name} required use:focus />
-			<input
-				class="tickets"
-				type="number"
-				min="1"
-				required
-				bind:value={participant.tickets}
-				on:keydown={submitOnEnter}
-			/>
-		</form>
+		<div class="participant">
+			<button
+				class="remove-button"
+				aria-label="Remove"
+				disabled={$participants.length === 1}
+				on:click={() => removeParticipant(participant.id)}>🗑️</button
+			>
+			<form class:validate on:submit|preventDefault={addParticipant}>
+				<div
+					class="color-label"
+					style={`background-color: ${getColorHashFromString(participant.name)}`}
+				/>
+				<input class="name" bind:value={participant.name} required use:focus />
+				<input
+					class="tickets"
+					type="number"
+					min="1"
+					required
+					bind:value={participant.tickets}
+					on:keydown={submitOnEnter}
+				/>
+			</form>
+		</div>
 	{/each}
 	<button on:click={addParticipant}>Add</button>
-	<hr />
 	<button class="reset" on:click={resetParticipants}>Reset</button>
 </div>
 
 <style>
-	.participants {
+	form {
+		display: grid;
+		grid-template-columns: [color-label] 0.25fr [name] 3fr [tickets] 0.5fr [end];
+		gap: 10px;
+	}
+
+	.wrapper {
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
 	}
 
 	.participant {
-		width: 85%;
+		display: flex;
+		gap: 10px;
+	}
+
+	.color-label {
+		grid-column-start: color-label;
+		align-self: center;
+		width: 25px;
+		height: 25px;
+		justify-self: center;
+	}
+
+	.name {
+		grid-column-start: name;
 	}
 
 	.tickets {
-		width: 10%;
-	}
-
-	.circle {
-		width: 25px;
-		height: 25px;
-	}
-
-	.reset {
-		margin-top: auto;
-	}
-
-	hr {
-		width: 100%;
-	}
-
-	form {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 10px;
-		color: #e7e7e7;
+		grid-column-start: tickets;
 	}
 
 	input {
+		width: 100%;
 		padding: 10px;
 		font-size: 1.2em;
 		font-family: system-ui;
