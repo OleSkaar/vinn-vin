@@ -13,12 +13,15 @@
 			return;
 		}
 
+		const previousParticipant = $participants[$participants.length - 1];
+
 		$participants = [
 			...$participants,
 			{
-				id: $participants[$participants.length - 1].id + 1,
+				id: previousParticipant.id + 1,
 				name: '',
-				tickets: 0
+				tickets: 0,
+				firstTicketIndex: previousParticipant.firstTicketIndex + previousParticipant.tickets,
 			}
 		];
 	};
@@ -38,7 +41,7 @@
 	};
 
 	const resetParticipants = () => {
-		$participants = [{ id: 0, name: '', tickets: 0 }];
+		$participants = [{ id: 0, name: '', tickets: 0, firstTicketIndex: 0 }];
 	};
 </script>
 
@@ -47,7 +50,7 @@
 		<div class="participant">
 			<button
 				class="remove-button"
-				aria-label="Remove"
+				aria-label="Fjern spiller"
 				disabled={$participants.length === 1}
 				on:click={() => removeParticipant(participant.id)}>🗑️</button
 			>
@@ -68,8 +71,8 @@
 			</form>
 		</div>
 	{/each}
-	<button on:click={addParticipant}>Add</button>
-	<button class="reset" on:click={resetParticipants}>Reset</button>
+	<button on:click={addParticipant}>Legg til</button>
+	<button class="reset" on:click={resetParticipants}>Fjern alle</button>
 </div>
 
 <style>
@@ -113,7 +116,7 @@
 		font-family: system-ui;
 	}
 
-	input[type='number']:not(:focus) {
+	input[type='number']:not(:focus):not(:hover) {
 		appearance: textfield;
 		-moz-appearance: textfield;
 		text-align: center;

@@ -13,6 +13,9 @@
 
 <path d={svgData.sectorPath} {fill} class="sector" class:stroke="{!isOnlySector}" />
 <path d={svgData.centerPath} id={`participant-${sector.participant.id}`} />
+{#each svgData.ticketPaths as ticketPath}
+	<path d={ticketPath} class="stroke" />
+{/each}
 <text>
 	<textPath href={`#participant-${sector.participant.id}`} startOffset="50%">{sector.participant.name}</textPath>
 </text>
