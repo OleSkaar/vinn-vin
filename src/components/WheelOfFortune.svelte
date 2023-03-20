@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { SectorData } from '../types';
 	import Sector from '../components/Sector.svelte';
-	import { participants } from '../stores/participants';
+	import { findWinningTicket, participants } from '../stores/participants';
 	import { isValidParticipant } from '../utils';
 	import { drawTicket } from '../utils/drawTicket';
 
@@ -11,7 +11,7 @@
 
 	// Use negative angles to move in clockwise direction
 	const angle = (fraction: number) => fraction * 360 * -1;
-	//* Setting the upper limit of degrees to exactly 360 causes a rendering bug in Chrome
+	// Setting the upper limit of degrees to exactly 360 causes a rendering bug in Chrome
 	const maxDegrees = (angle: number) => Math.max(angle, -359.9999);
 
 	$: validParticipants = $participants.filter((participant) => isValidParticipant(participant));
@@ -44,25 +44,19 @@
 
 	const spinTheWheel = () => {
 		const ticketIndex = drawTicket(totalTickets);
-		const winningSector = sectors.find((sector) => {
-			const { participant } = sector;
+		const winningTicket = findWinningTicket($participants, ticketIndex);
 
-			return (
-				ticketIndex >= participant.firstTicketIndex &&
-				ticketIndex <= participant.firstTicketIndex + participant.tickets - 1
-			);
-		});
+		prevWinningAngle = winningAngle;
 
 		const ticket = ticketIndex + 1;
 		const ticketAngle = angle(ticket / totalTickets);
 		const prevAngle = angle((ticket - 1) / totalTickets);
-		prevWinningAngle = winningAngle;
 		winningAngle = (prevAngle + ticketAngle) / 2;
 		rotation === startRotation
 			? (rotation = winningAngle + startRotation + 1080)
 			: (rotation = rotation - prevWinningAngle + winningAngle + 1080);
 
-		winner = `${winningSector?.participant.name}, vinnerlodd: ${ticket}`;
+		winner = `${winningTicket?.name}, vinnerlodd: ${ticket}`;
 	};
 </script>
 

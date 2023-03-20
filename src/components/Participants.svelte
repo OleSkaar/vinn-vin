@@ -21,7 +21,6 @@
 				id: previousParticipant.id + 1,
 				name: '',
 				tickets: 0,
-				firstTicketIndex: previousParticipant.firstTicketIndex + previousParticipant.tickets,
 			}
 		];
 	};
@@ -41,7 +40,7 @@
 	};
 
 	const resetParticipants = () => {
-		$participants = [{ id: 0, name: '', tickets: 0, firstTicketIndex: 0 }];
+		$participants = [{ id: 0, name: '', tickets: 0 }];
 	};
 </script>
 

@@ -7,7 +7,6 @@ export interface Participant {
     id: number;
     name: string;
     tickets: number;
-    firstTicketIndex: number;
 }
 
 export interface SectorData {
