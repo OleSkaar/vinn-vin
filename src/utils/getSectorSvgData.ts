@@ -1,13 +1,13 @@
 import type { SectorData, Coordinates } from "../types";
 
-export const getCoordinatesOnCircle = (radius: number, angle: number) => {
+const getCoordinatesOnCircle = (radius: number, angle: number) => {
     return {
         x: radius * Math.sin((Math.PI * 2 * angle) / 360),
         y: radius * Math.cos((Math.PI * 2 * angle) / 360)
     };
 };
 
-export const line = (coords: Coordinates) => `M 0 0 L ${coords.x} ${coords.y}`;
+const line = (coords: Coordinates) => `M 0 0 L ${coords.x} ${coords.y}`;
 
 export const getSectorSvgData = (sector: SectorData, radius: number) => {
     const { startAngle, endAngle } = sector;

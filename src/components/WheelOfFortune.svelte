@@ -2,7 +2,7 @@
 	import type { SectorData } from '../types';
 	import Sector from '../components/Sector.svelte';
 	import { participants } from '../stores/participants';
-	import { getCoordinatesOnCircle, isValidParticipant, line } from '../utils';
+	import { isValidParticipant } from '../utils';
 	import { drawTicket } from '../utils/drawTicket';
 
 	export let diameter: number;
@@ -19,7 +19,7 @@
 
 	$: sectors = validParticipants.reduce((sectors: SectorData[], participant, index) => {
 		const startAngle = index === 0 ? 0 : sectors[index - 1].endAngle;
-		const endAngle = maxDegrees((startAngle + angle(participant.tickets / totalTickets)));
+		const endAngle = maxDegrees(startAngle + angle(participant.tickets / totalTickets));
 
 		const ticketAngle = (endAngle - startAngle) / participant.tickets;
 		const ticketAngles = [...Array<number>(participant.tickets)].map((_, i) => {
@@ -36,28 +36,33 @@
 		return sectors;
 	}, []);
 
+	const startRotation = 180;
 	let winner = '';
 	let winningAngle = 0;
-	let rotation = 180;
+	let prevWinningAngle = 0;
+	let rotation = startRotation;
 
 	const spinTheWheel = () => {
-		const ticket = 0;
+		const ticketIndex = drawTicket(totalTickets);
 		const winningSector = sectors.find((sector) => {
 			const { participant } = sector;
 
 			return (
-				ticket >= participant.firstTicketIndex &&
-				ticket <= participant.firstTicketIndex + participant.tickets - 1
+				ticketIndex >= participant.firstTicketIndex &&
+				ticketIndex <= participant.firstTicketIndex + participant.tickets - 1
 			);
 		});
 
+		const ticket = ticketIndex + 1;
 		const ticketAngle = angle(ticket / totalTickets);
-		const prevAngle = angle ((ticket - 1) / totalTickets);
-		console.log(ticketAngle, prevAngle)
+		const prevAngle = angle((ticket - 1) / totalTickets);
+		prevWinningAngle = winningAngle;
 		winningAngle = (prevAngle + ticketAngle) / 2;
-		console.log(winningAngle)
+		rotation === startRotation
+			? (rotation = winningAngle + startRotation + 1080)
+			: (rotation = rotation - prevWinningAngle + winningAngle + 1080);
 
-		winner = `${winningSector?.participant.name}, ticket: ${ticket}. Angle: ${winningAngle}`;
+		winner = `${winningSector?.participant.name}, vinnerlodd: ${ticket}`;
 	};
 </script>
 
@@ -69,18 +74,11 @@
 				{#each sectors as sector (sector.participant.id)}
 					<Sector {sector} {radius} isOnlySector={sectors.length === 1} />
 				{/each}
-				{#if winner.length > 0}
-					<path
-						d={line(getCoordinatesOnCircle(radius, winningAngle))}
-						stroke-width="5"
-						stroke="blue"
-					/>
-				{/if}
 			</g>
 		</g>
 		<polygon
-			transform={`translate(35, 0)`}
-			points={`${diameter - 50},${radius} ${diameter},${radius + 25} ${diameter},${radius - 25}`}
+			transform={`translate(0, -35)`}
+			points={`${radius - 25},${0} ${radius + 25},${0} ${radius},${50}`}
 			fill="black"
 		/>
 	</svg>
@@ -89,6 +87,7 @@
 	{#if winner.length > 0}
 		<p>{winner}</p>
 	{/if}
+	<p>Antall lodd: {totalTickets}</p>
 </div>
 
 <style>
