@@ -2,7 +2,7 @@
 	import WheelOfFortune from '../components/WheelOfFortune.svelte';
 	import Participants from '../components/Participants.svelte';
 
-	const diameter = 500;
+	const diameter = 700;
 </script>
 
 <svelte:head>
@@ -27,17 +27,17 @@
 	main {
 		font-family: system-ui;
 		margin: 0 auto;
+		padding: 0 50px;
 	}
 
 	h1 {
-		text-align: center;
-		font-size: 3em;
-		margin-bottom: 1.5em;
+		display: inline-block;
+		font-size: 2.5em;
 	}
 
 	.container {
 		display: grid;
 		grid-template-columns: 1fr 2fr;
-		gap: 50px;
+		gap: 150px;
 	}
 </style>

@@ -6,18 +6,23 @@
 	export let sector: SectorData;
 	export let radius: number;
 	export let isOnlySector: boolean;
+	export let ticketLines: boolean;
 
 	$: svgData = getSectorSvgData(sector, radius);
 	$: fill = getColorHashFromString(sector.participant.name);
 </script>
 
-<path d={svgData.sectorPath} {fill} class="sector" class:stroke="{!isOnlySector}" />
+<path d={svgData.sectorPath} {fill} class="sector" class:stroke={!isOnlySector} />
 <path d={svgData.centerPath} id={`participant-${sector.participant.id}`} />
-{#each svgData.ticketPaths as ticketPath}
-	<path d={ticketPath} class="stroke" />
-{/each}
+{#if ticketLines}
+	{#each svgData.ticketPaths as ticketPath}
+		<path d={ticketPath} class="stroke" />
+	{/each}
+{/if}
 <text>
-	<textPath href={`#participant-${sector.participant.id}`} startOffset="50%">{sector.participant.name}</textPath>
+	<textPath href={`#participant-${sector.participant.id}`} startOffset="50%"
+		>{sector.participant.name}</textPath
+	>
 </text>
 
 <style>

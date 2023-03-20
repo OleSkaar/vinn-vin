@@ -7,6 +7,8 @@
 
 	export let diameter: number;
 
+	let ticketLines = false;
+
 	$: radius = diameter / 2;
 
 	// Use negative angles to move in clockwise direction
@@ -66,7 +68,7 @@
 			<circle r={radius} cx={0} cy={0} stroke-width="5" />
 			<g class="sectors" style={`transform: rotate(${rotation}deg)`}>
 				{#each sectors as sector (sector.participant.id)}
-					<Sector {sector} {radius} isOnlySector={sectors.length === 1} />
+					<Sector {sector} {radius} {ticketLines} isOnlySector={sectors.length === 1} />
 				{/each}
 			</g>
 		</g>
@@ -82,6 +84,8 @@
 		<p>{winner}</p>
 	{/if}
 	<p>Antall lodd: {totalTickets}</p>
+	<input type="checkbox" name="Ticket lines" bind:checked={ticketLines} />
+	<label for="Ticket lines">Vis hvert lodd</label>
 </div>
 
 <style>
@@ -98,6 +102,11 @@
 		font-size: 1.2em;
 		padding: 10px;
 		cursor: pointer;
+	}
+
+	input {
+		width: 20px;
+		height: 20px;
 	}
 
 	.sectors {

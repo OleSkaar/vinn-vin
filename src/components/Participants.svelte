@@ -110,8 +110,7 @@
 
 	input {
 		width: 100%;
-		padding: 10px;
-		font-size: 1.2em;
+		font-size: 1em;
 		font-family: system-ui;
 	}
 
@@ -127,7 +126,6 @@
 
 	button {
 		font-size: 1.2em;
-		padding: 10px;
 		cursor: pointer;
 	}
 </style>
