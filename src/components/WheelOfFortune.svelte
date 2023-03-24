@@ -63,13 +63,17 @@
 
 		winner = `${winningTicket?.name}, vinnerlodd: ${ticket}`;
 	};
+
+	const resetWheel = () => {
+		rotation = startRotation;
+	}
 </script>
 
 <div>
 	<svg width={diameter} height={diameter} shape-rendering="geometricPrecision">
 		<g transform={`translate(${radius}, ${radius})`}>
 			<circle class="wheel" r={radius} cx={0} cy={0} stroke-width="5" />
-			<g class="sectors" style={`transform: rotate(${rotation}deg)`}>
+			<g id="sectors" class="sectors-animate" style={`transform: rotate(${rotation}deg)`}>
 				{#each sectors as sector (sector.participant.id)}
 					<Sector {sector} {radius} {ticketLines} isOnlySector={sectors.length === 1} />
 				{/each}
@@ -87,11 +91,12 @@
 			<p>{winner}</p>
 		{/if} -->
 		<p>🎟️ Antall lodd: {totalTickets}</p>
-		<button on:click={spinTheWheel}>Trekk lodd!</button>
 		<div class="show-tickets-container">
 			<input type="checkbox" name="Ticket lines" bind:checked={ticketLines} />
 			<label for="Ticket lines">Vis hvert lodd</label>
 		</div>
+		<button on:click={spinTheWheel}>Trekk lodd!</button>
+		<button on:click={resetWheel}>Tilbakestill hjul</button>
 	</div>
 </div>
 
@@ -128,7 +133,7 @@
 		fill: gainsboro;
 	}
 
-	.sectors {
+	.sectors-animate {
 		transition: transform 6s cubic-bezier(0.25, 1, 0.5, 1);
 	}
 
