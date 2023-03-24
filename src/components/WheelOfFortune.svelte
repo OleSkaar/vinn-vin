@@ -44,7 +44,10 @@
 	let prevWinningAngle = 0;
 	let rotation = startRotation;
 
+	
 	const spinTheWheel = () => {
+		var audio = new Audio('drumroll.wav');
+		audio.play();
 		const ticketIndex = drawTicket(totalTickets);
 		const winningTicket = findWinningTicket($participants, ticketIndex);
 
@@ -65,12 +68,13 @@
 <div>
 	<svg width={diameter} height={diameter} shape-rendering="geometricPrecision">
 		<g transform={`translate(${radius}, ${radius})`}>
-			<circle r={radius} cx={0} cy={0} stroke-width="5" />
+			<circle class="wheel" r={radius} cx={0} cy={0} stroke-width="5" />
 			<g class="sectors" style={`transform: rotate(${rotation}deg)`}>
 				{#each sectors as sector (sector.participant.id)}
 					<Sector {sector} {radius} {ticketLines} isOnlySector={sectors.length === 1} />
 				{/each}
 			</g>
+			<circle class="center-circle" r={radius * 0.05} cx={0} cy={0} />
 		</g>
 		<polygon
 			transform={`translate(0, -35)`}
@@ -78,14 +82,17 @@
 			fill="black"
 		/>
 	</svg>
-
-	<button on:click={spinTheWheel}>Trekk lodd!</button>
-	{#if winner.length > 0}
-		<p>{winner}</p>
-	{/if}
-	<p>Antall lodd: {totalTickets}</p>
-	<input type="checkbox" name="Ticket lines" bind:checked={ticketLines} />
-	<label for="Ticket lines">Vis hvert lodd</label>
+	<div class="controls">
+		<!-- {#if winner.length > 0}
+			<p>{winner}</p>
+		{/if} -->
+		<p>🎟️ Antall lodd: {totalTickets}</p>
+		<button on:click={spinTheWheel}>Trekk lodd!</button>
+		<div class="show-tickets-container">
+			<input type="checkbox" name="Ticket lines" bind:checked={ticketLines} />
+			<label for="Ticket lines">Vis hvert lodd</label>
+		</div>
+	</div>
 </div>
 
 <style>
@@ -93,23 +100,49 @@
 		overflow: initial;
 	}
 
-	circle {
-		stroke: black;
-		fill: transparent;
-	}
-
+	
 	button {
 		font-size: 1.2em;
 		padding: 10px;
 		cursor: pointer;
 	}
-
+	
 	input {
 		width: 20px;
 		height: 20px;
 	}
 
+	input[type='checkbox'] {
+		cursor: pointer;
+	}
+
+	circle {
+		stroke: black;
+	}
+	
+	.wheel {
+		fill: transparent;
+	}
+
+	.center-circle {
+		fill: gainsboro;
+	}
+
 	.sectors {
-		transition: transform 1s ease;
+		transition: transform 6s cubic-bezier(0.25, 1, 0.5, 1);
+	}
+
+	.controls {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-top: 100px;
+		font-size: 1.2em;
+	}
+
+	.show-tickets-container {
+		display: flex;
+		gap: 5px;
+		align-items: center;
 	}
 </style>

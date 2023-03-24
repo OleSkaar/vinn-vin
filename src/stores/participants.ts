@@ -1,7 +1,8 @@
 import { writable } from 'svelte/store';
 import type { Participant } from '../types';
 
-export const participants = writable<Participant[]>([
+/*
+[
     {
         id: 0,
         name: "Ella",
@@ -152,7 +153,15 @@ export const participants = writable<Participant[]>([
         name: "Elijah",
         tickets: 6
     }
-]);
+]
+
+*/
+
+export const participants = writable<Participant[]>([{
+    id: 0,
+    name: '',
+    tickets: 1,
+}]);
 
 export const findWinningTicket = (participants: Participant[], ticket: number) => {
     let ticketTotal = 0;

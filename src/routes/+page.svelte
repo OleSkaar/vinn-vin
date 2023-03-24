@@ -2,7 +2,7 @@
 	import WheelOfFortune from '../components/WheelOfFortune.svelte';
 	import Participants from '../components/Participants.svelte';
 
-	const diameter = 700;
+	$: diameter = 700;
 </script>
 
 <svelte:head>
@@ -11,6 +11,7 @@
 
 <main>
 	<h1>🍷 Vinn vin!</h1>
+	<span><strong>BETA</strong></span>
 	<section class="container">
 		<Participants />
 		<WheelOfFortune {diameter} />
@@ -33,6 +34,10 @@
 	h1 {
 		display: inline-block;
 		font-size: 2.5em;
+	}
+
+	span {
+		margin-left: 10px;
 	}
 
 	.container {
