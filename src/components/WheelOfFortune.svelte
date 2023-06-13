@@ -99,7 +99,8 @@
 		<!-- {#if winner.length > 0}
 			<p>{winner}</p>
 		{/if} -->
-
+		<input id="wheelsize" type="range" bind:value={diameter} min=400 max=1000>
+		<label for="wheelsize">Diameter</label>
 		<button disabled={rotation === startRotation} on:click={resetWheel}>🔄 Tilbakestill hjul</button>
 	</div>
 </div>
