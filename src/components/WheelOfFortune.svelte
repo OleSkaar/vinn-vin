@@ -4,10 +4,15 @@
 	import { findWinningTicket, participants } from '../stores/participants';
 	import { isValidParticipant } from '../utils';
 	import { drawTicket } from '../utils/drawTicket';
+	import { ticketLineStore } from '../stores/ticketLines';
 
 	export let diameter: number;
 
 	let ticketLines = false;
+
+	ticketLineStore.subscribe((value) => {
+		ticketLines = value;
+	});
 
 	$: radius = diameter / 2;
 
@@ -44,7 +49,6 @@
 	let prevWinningAngle = 0;
 	let rotation = startRotation;
 
-	
 	const spinTheWheel = () => {
 		const audio = new Audio('drumroll.wav');
 		audio.play();
@@ -65,37 +69,38 @@
 	};
 
 	const resetWheel = () => {
-		rotation = startRotation;
-	}
+		if (confirm("Vil du tilbakestille hjulet?") === true) {
+			rotation = startRotation;
+		}
+	};
 </script>
 
 <div class="container">
-	<svg width={diameter} height={diameter} shape-rendering="geometricPrecision">
-		<g transform={`translate(${radius}, ${radius})`}>
-			<circle class="wheel" r={radius} cx={0} cy={0} stroke-width="5" />
-			<g id="sectors" class="sectors-animate" style={`transform: rotate(${rotation}deg)`}>
-				{#each sectors as sector (sector.participant.id)}
-					<Sector {sector} {radius} {ticketLines} isOnlySector={sectors.length === 1} />
-				{/each}
+	<div class="wheelContainer">
+		<svg width={diameter} height={diameter} shape-rendering="geometricPrecision">
+			<g transform={`translate(${radius}, ${radius})`}>
+				<circle class="wheel" r={radius} cx={0} cy={0} stroke-width="5" />
+				<g id="sectors" class="sectors-animate" style={`transform: rotate(${rotation}deg)`}>
+					{#each sectors as sector (sector.participant.id)}
+						<Sector {sector} {radius} {ticketLines} isOnlySector={sectors.length === 1} />
+					{/each}
+				</g>
+				<circle class="center-circle" r={radius * 0.05} cx={0} cy={0} />
 			</g>
-			<circle class="center-circle" r={radius * 0.05} cx={0} cy={0} />
-		</g>
-		<polygon
-			transform={`translate(0, -35)`}
-			points={`${radius - 25},${0} ${radius + 25},${0} ${radius},${50}`}
-			fill="black"
-		/>
-	</svg>
+			<polygon
+				transform={`translate(0, -35)`}
+				points={`${radius - 25},${0} ${radius + 25},${0} ${radius},${50}`}
+				fill="black"
+			/>
+		</svg>
+		<button class="spinTheWheel" on:click={spinTheWheel}>Snurr</button>
+	</div>
 	<div class="controls">
 		<!-- {#if winner.length > 0}
 			<p>{winner}</p>
 		{/if} -->
-		<div class="show-tickets-container">
-			<input type="checkbox" name="Ticket lines" bind:checked={ticketLines} />
-			<label for="Ticket lines">Vis hvert lodd</label>
-		</div>
-		<button on:click={spinTheWheel}>Trekk lodd!</button>
-		<button on:click={resetWheel}>Tilbakestill hjul</button>
+
+		<button disabled={rotation === startRotation} on:click={resetWheel}>🔄 Tilbakestill hjul</button>
 	</div>
 </div>
 
@@ -104,19 +109,9 @@
 		overflow: initial;
 	}
 
-	
 	button {
 		font-size: 1.2em;
 		padding: 10px;
-		cursor: pointer;
-	}
-	
-	input {
-		width: 20px;
-		height: 20px;
-	}
-
-	input[type='checkbox'] {
 		cursor: pointer;
 	}
 
@@ -130,7 +125,7 @@
 		justify-content: space-between;
 		align-items: center;
 	}
-	
+
 	.wheel {
 		fill: transparent;
 	}
@@ -145,15 +140,27 @@
 
 	.controls {
 		display: flex;
-		justify-content: space-between;
+		justify-content: flex-end;
+		gap: 20px;
 		align-items: center;
 		font-size: 1.2em;
 		width: 100%;
 	}
 
-	.show-tickets-container {
-		display: flex;
-		gap: 5px;
-		align-items: center;
+	.wheelContainer {
+		position: relative;
+	}
+
+	.spinTheWheel {
+		font-size: 2rem;
+		border-radius: 50%;
+		height: 140px;
+		width: 140px;
+		border: 1px solid black;
+		position: absolute;
+		text-transform: uppercase;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 	}
 </style>

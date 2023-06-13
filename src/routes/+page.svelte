@@ -2,7 +2,7 @@
 	import WheelOfFortune from '../components/WheelOfFortune.svelte';
 	import Participants from '../components/Participants.svelte';
 
-	$: diameter = 600;
+	$: diameter = 700;
 </script>
 
 <svelte:head>

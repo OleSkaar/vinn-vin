@@ -1,6 +1,13 @@
 <script lang="ts">
 	import { participants } from '../stores/participants';
+	import { ticketLineStore } from '../stores/ticketLines';
 	import { getColorHashFromString, isValidParticipant } from '../utils';
+
+	let ticketLines: boolean;
+
+	ticketLineStore.subscribe(value => {
+		ticketLines = value;
+	})
 
 	$: hasInvalidParticipant = !$participants.every(isValidParticipant);
 
@@ -28,6 +35,10 @@
 		];
 	};
 
+	const toggleTicketLines = () => {
+		ticketLineStore.update(value => !value);
+	}
+
 	const removeParticipant = (id: number) => {
 		$participants = $participants.filter((participant) => participant.id !== id);
 	};
@@ -37,9 +48,7 @@
 	};
 
 	const submitOnEnter = (e: KeyboardEvent) => {
-		console.log('Submit', e);
 		if (e.key === 'Enter') {
-			console.log('Hi');
 			addParticipant();
 		}
 	};
@@ -98,8 +107,12 @@
 		<button on:click={addParticipant}>Legg til</button>
 	</div>
 	<div class="controls">
-	<button class="reset" on:click={resetParticipants}>🗑️ Fjern alle</button>
-	<p>🎟️ Antall lodd: {totalTickets}</p>
+		<button class="reset" on:click={resetParticipants}>🗑️ Fjern alle</button>
+		<div class="show-tickets-container">
+			<input class="ticketLines" type="checkbox" name="Ticket lines" on:click={toggleTicketLines} />
+			<label for="Ticket lines">Vis hvert lodd</label>
+		</div>
+		<p>🎟️ Antall lodd: {totalTickets}</p>
 	</div>
 </div>
 
@@ -128,6 +141,12 @@
 		font-size: 1.2em;
 		cursor: pointer;
 		padding: 10px;
+	}
+
+	.ticketLines {
+		width: 20px;
+		height: 20px;
+		cursor: pointer;
 	}
 
 	.reset {
@@ -191,5 +210,12 @@
 	.controls {
 		display: flex;
 		justify-content: space-between;
+		align-items: center;
+	}
+
+	.show-tickets-container {
+		display: flex;
+		gap: 5px;
+		align-items: center;
 	}
 </style>
