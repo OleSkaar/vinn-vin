@@ -46,7 +46,7 @@
 
 	
 	const spinTheWheel = () => {
-		var audio = new Audio('drumroll.wav');
+		const audio = new Audio('drumroll.wav');
 		audio.play();
 		const ticketIndex = drawTicket(totalTickets);
 		const winningTicket = findWinningTicket($participants, ticketIndex);
@@ -69,7 +69,7 @@
 	}
 </script>
 
-<div>
+<div class="container">
 	<svg width={diameter} height={diameter} shape-rendering="geometricPrecision">
 		<g transform={`translate(${radius}, ${radius})`}>
 			<circle class="wheel" r={radius} cx={0} cy={0} stroke-width="5" />
@@ -90,7 +90,6 @@
 		<!-- {#if winner.length > 0}
 			<p>{winner}</p>
 		{/if} -->
-		<p>🎟️ Antall lodd: {totalTickets}</p>
 		<div class="show-tickets-container">
 			<input type="checkbox" name="Ticket lines" bind:checked={ticketLines} />
 			<label for="Ticket lines">Vis hvert lodd</label>
@@ -124,6 +123,13 @@
 	circle {
 		stroke: black;
 	}
+
+	.container {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		align-items: center;
+	}
 	
 	.wheel {
 		fill: transparent;
@@ -141,8 +147,8 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-top: 100px;
 		font-size: 1.2em;
+		width: 100%;
 	}
 
 	.show-tickets-container {

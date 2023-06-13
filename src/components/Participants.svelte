@@ -4,6 +4,9 @@
 
 	$: hasInvalidParticipant = !$participants.every(isValidParticipant);
 
+	$: validParticipants = $participants.filter((participant) => isValidParticipant(participant));
+	$: totalTickets = validParticipants.reduce((total, current) => (total += current.tickets), 0);
+
 	let validate = false;
 
 	const addParticipant = () => {
@@ -34,7 +37,9 @@
 	};
 
 	const submitOnEnter = (e: KeyboardEvent) => {
+		console.log('Submit', e);
 		if (e.key === 'Enter') {
+			console.log('Hi');
 			addParticipant();
 		}
 	};
@@ -72,7 +77,13 @@
 						class="color-label"
 						style={`background-color: ${getColorHashFromString(participant.name)}`}
 					/> -->
-					<input class="name" bind:value={participant.name} required use:focus />
+					<input
+						class="name"
+						bind:value={participant.name}
+						on:keydown={submitOnEnter}
+						required
+						use:focus
+					/>
 					<input
 						class="tickets"
 						type="number"
@@ -84,9 +95,12 @@
 				</form>
 			</div>
 		{/each}
+		<button on:click={addParticipant}>Legg til</button>
 	</div>
-	<button class="add-participant" on:click={addParticipant}>Legg til</button>
-	<button class="reset" on:click={resetParticipants}>Fjern alle</button>
+	<div class="controls">
+	<button class="reset" on:click={resetParticipants}>🗑️ Fjern alle</button>
+	<p>🎟️ Antall lodd: {totalTickets}</p>
+	</div>
 </div>
 
 <style>
@@ -116,31 +130,42 @@
 		padding: 10px;
 	}
 
+	.reset {
+		max-width: max-content;
+	}
+
 	.participants {
 		display: grid;
-		gap: 10px 20px;
-		grid-template-rows: repeat(15, 1fr);
-		grid-auto-flow: column;
-		grid-auto-columns: 1fr;
+		gap: 10px 30px;
+		grid-template-columns: 1fr 1fr;
+		grid-auto-rows: min-content;
+		max-height: 80vh;
+		height: 100%;
+		overflow-y: auto;
 	}
 
 	.wrapper {
 		display: flex;
 		flex-direction: column;
+		justify-content: space-between;
 		gap: 10px;
 	}
 
 	.participant {
 		display: flex;
+		font-size: 1.5rem;
 		gap: 10px;
+		max-height: 50px;
 	}
 
 	.name {
 		grid-column-start: name;
+		min-width: 100px;
 	}
 
 	.tickets {
 		grid-column-start: tickets;
+		min-width: 3rem;
 	}
 
 	.remove-button {
@@ -159,11 +184,12 @@
 		stroke: black;
 	}
 
-	.add-participant {
-		margin-top: auto;
-	}
-
 	.validate > input:invalid {
 		outline: 1px solid darkred;
+	}
+
+	.controls {
+		display: flex;
+		justify-content: space-between;
 	}
 </style>
