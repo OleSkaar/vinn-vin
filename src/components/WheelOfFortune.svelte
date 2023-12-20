@@ -55,6 +55,9 @@
 		const ticketIndex = drawTicket(totalTickets);
 		const winningTicket = findWinningTicket($participants, ticketIndex);
 
+		console.log({ticketIndex})
+		console.log({winningTicket});
+
 		prevWinningAngle = winningAngle;
 
 		const ticket = ticketIndex + 1;
